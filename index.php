@@ -54,7 +54,7 @@
   </div>
   
 <div class="container">
-  <form action="generatepdf.php" method="POST" > 
+  <form method="post" action="generatepdf.php"> 
     <div class="blue-border">
     <h5><b>Identitas</b></h5>
       <div class="form-group row">
