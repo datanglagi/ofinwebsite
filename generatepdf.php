@@ -205,15 +205,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $kekayaanbersih = $totaltabunganinvestasi-$totalhutang;
 
     $danadarurat = round($aset_deposito/$totalpengeluaran, 0);
-    $rasiolikuiditas = strval(round($aset_deposito/$kekayaanbersih*100,2))." %"; //bentuk persentase
-    $rasiotabungan = strval(round($pengeluaran_tabungan/$totalpendapatan*100,2))." %";//bentuk persentase
-    $rasiohutangterhadapaset = strval(round($totalhutang/$totalasetdaninvestasi*100,2))." %";
-    $rasiokemampuanbayarhutang = strval(round(($pengeluaran_kredit + $pengeluaran_pinjaman)/$totalpendapatan*100,2))." %";
-    $rasiokemampuanbayarhutangkonsumtif = strval(round($pengeluaran_pinjaman/$totalpendapatan*100,2))." %"; 
-    $rasioinvestasiterhadapkekayaan = strval(round($aset_saham/$kekayaanbersih*100, 2))." %";
-    $rasiosolvabilitas = strval(round($kekayaanbersih/$totalasetdaninvestasi*100,2))." %";
-    $rasiopendapataaktif = strval(round($totalpendapatanaktif/$totalpengeluaran*100,2))." %";
-    $rasiofinancialfreedom = strval(round($totalpendapatanpasif/$totalpengeluaran*100,2))." %";
+    $rasiolikuiditas = round($aset_deposito/$kekayaanbersih*100,2); //bentuk persentase
+    $rasiotabungan = round($pengeluaran_tabungan/$totalpendapatan*100,2);//bentuk persentase
+    $rasiohutangterhadapaset = round($totalhutang/$totalasetdaninvestasi*100,2);
+    $rasiokemampuanbayarhutang = round(($pengeluaran_kredit + $pengeluaran_pinjaman)/$totalpendapatan*100,2);
+    $rasiokemampuanbayarhutangkonsumtif = round($pengeluaran_pinjaman/$totalpendapatan*100,2); 
+    $rasioinvestasiterhadapkekayaan = round($aset_saham/$kekayaanbersih*100, 2);
+    $rasiosolvabilitas = round($kekayaanbersih/$totalasetdaninvestasi*100,2);
+    $rasiopendapataaktif = round($totalpendapatanaktif/$totalpengeluaran*100,2);
+    $rasiofinancialfreedom = round($totalpendapatanpasif/$totalpengeluaran*100,2);
 
     $labelpendapatan = array('Gaji', 'Insentif', 'Pendapatan Bisnis', 'Pendapatan Pasif');
     $labelpengeluaran= array('Pajak', 'Amal', 'Tabungan & Investasi', 'Bayar Asuransi', 'Cicilan KPR, KPA dan kredit bisnis', 'Cicilan kartu kredit, KTA, dan Pinjaman Online', 'Belanja Rumah Tangga', 'Gaya Hidup');
@@ -229,17 +229,69 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $tabungan = array('IDR '.money_format('%.2n',$aset_deposito), 'IDR '.money_format('%.2n',$aset_logam), 'IDR '.money_format('%.2n',$aset_saham), 'IDR '.money_format('%.2n',$aset_investasi));
     $kewajiban = array('IDR '.money_format('%.2n',$aset_kewajiban_kpr), 'IDR '.money_format('%.2n',$aset_kewajiban_kredit_motor), 'IDR '.money_format('%.2n',$aset_kewajiban_lain));
 
+    if ($danadarurat<6) {
+        $keterangandanadarurat = "Nilai darurat anda tidak ideal";
+    } else {
+        $keterangandanadarurat = "Nilai darurat anda ideal";
+    }
 
+    if ($rasiolikuiditas < 15) {
+        $keteranganlikuiditas = "Nilai rasio aset likuid terhadap kekayaan bersih tidak ideal";
+    } else {
+        $keteranganlikuiditas = "Nilai rasio aset likuid terhadap kekayaan bersih ideal";
+    }
+
+    if ($rasiotabungan < 10 ) {
+        $keterangantabungan = "Nilai rasio tabungan Anda tidak ideal";
+    } else {
+        $keterangantabungan = "Nilai rasio tabungan Anda ideal";
+    }
+
+    if ($rasiokemampuanbayarhutang <= 35 ) {
+        $keteranganbayarhutang = "Rasio kemampuan bayar hutang Anda ideal";
+    } else {
+        $keteranganbayarhutang = "Rasio kemampuan bayar hutang Anda tidak ideal";
+    }
+
+    if ($rasiokemampuanbayarhutangkonsumtif <= 15) {
+        $keteranganbayarhutangkonsumtif = "Rasio kemampuan bayar hutang konsumtif Anda ideal";
+    } else {
+        $keteranganbayarhutangkonsumtif = "Rasio kemampuan bayar hutang konsumtif Anda tidak ideal";
+    }
+
+    if ($rasioinvestasiterhadapkekayaan > 50) {
+        $keteranganinvestasi = "Rasio investasi Anda terhadap kekayaan bersih ideal";
+    } else {
+        $keteranganinvestasi = "Rasio investasi Anda terhadap kekayaan bersih tidak ideal";
+    }
+
+    if ($rasiosolvabilitas > 50 ){
+        $keterangansolvabilitas = "Rasio solvabilitas Anda ideal";
+    } else {
+        $keterangansolvabilitas = "Rasio solvabilitas Anda tidak ideal";
+    }
+
+    if ($rasiopendapataaktif > 50){
+        $keteranganpendapatan = "Rasio pendapatan aktif Anda ideal";
+    } else {
+        $keteranganpendapatan = "Rasio pendapatan aktif Anda tidak ideal";
+    }
+
+    if ($rasiofinancialfreedom >= 100) {
+        $keteranganfinancial = "Anda sudah sudah financial freedom";
+    } else {
+        $keteranganfinancial = "Anda belum financial freedom";
+    }
     $data = array(
-            array('Dana Darurat', $danadarurat, "6-12x", "Keterangan1"),
-            array('Rasio Likuiditas', $rasiolikuiditas, ">=15%", "Keterangan2"),
-            array('Rasio Tabungan',$rasiotabungan, "10%", "Keterangan1"),
-            array('Rasio Kemampuan Membayar Hutang', $rasiokemampuanbayarhutang, "35%", "Keterangan"),
-            array('Rasio Kemampuan Membayar Hutang Konsumtif',$rasiokemampuanbayarhutangkonsumtif, "15%","Keterangan"),
-            array('Rasio Investasi Terhadap Kekayaan', $rasioinvestasiterhadapkekayaan, ">=50%","Keterangan"),
-            array('Rasio Solvabilitas', $rasiosolvabilitas, ">=50%","Keterangan"),
-            array('Rasio Pendapatan Aktif', $rasiopendapataaktif, ">=50%","Keterangan"),
-            array('Rasio Financial Freedom', $rasiofinancialfreedom, ">=100%","Keterangan")
+            array('Dana Darurat', strval($danadarurat)." %", "6-12x", $keterangandanadarurat),
+            array('Rasio Likuiditas', strval($rasiolikuiditas)." %", ">=15%", $keteranganlikuiditas),
+            array('Rasio Tabungan',strval($rasiotabungan)." %", "10%", $keterangantabungan),
+            array('Rasio Kemampuan Membayar Hutang', strval($rasiokemampuanbayarhutang)." %", "35%", $keteranganbayarhutang),
+            array('Rasio Kemampuan Membayar Hutang Konsumtif',strval($rasiokemampuanbayarhutangkonsumtif)." %", "15%",$keteranganbayarhutangkonsumtif),
+            array('Rasio Investasi Terhadap Kekayaan', strval($rasioinvestasiterhadapkekayaan)." %", ">=50%",$keteranganinvestasi),
+            array('Rasio Solvabilitas', strval($rasiosolvabilitas)." %", ">=50%",$keterangansolvabilitas),
+            array('Rasio Pendapatan Aktif', strval($rasiopendapataaktif)." %", ">=50%",$keteranganpendapatan),
+            array('Rasio Financial Freedom', strval($rasiofinancialfreedom)." %", ">=100%",$keteranganfinancial)
     );
 
 
@@ -314,7 +366,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $pdf->SetDrawColor(229,229,247);
     $pdf->SetLineWidth(.3);
 
-    $pdf->SetWidths(array(40,30,30,60));    
+    $pdf->SetWidths(array(40,30,30,65));    
     $pdf -> Row($columnLabels, array(229,229,247));
     foreach ($data as $row) {
         $pdf -> Row($row,array(255,255,255));
