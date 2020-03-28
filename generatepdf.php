@@ -9,16 +9,17 @@ function test_input($data) {
     return $data;
     }
 
-    function convert($data) {
-        $data = explode(" ", $data);
-        $data = explode(".", $data[1]);
-        $data = join("", $data);
-        $data = floatval($data);
-        return $data;
+function convert($data) {
+    $data = explode(" ", $data);
+    $data = explode(".", $data[1]);
+    $data = join("", $data);
+    $data = floatval($data);
+    return $data;
     }
 
-if (isset($_POST["name"]) && $_POST["email"] && $_POST["telepon"] && $_POST["kota"] && $_POST["gaji"] && $_POST["bonus"] && $_POST["bisnis"] && $_POST["pajak"] && $_POST["donasi"] && $_POST["tabungan"] && $_POST["premi"] && $_POST["pinjaman"] && $_POST["kpr"] && $_POST["belanja"] && $_POST["gaya"] && $_POST["rumah"] && $_POST["kendaraan"] && $_POST["asetlain"] && $_POST["deposito"] && $_POST["logam"] && $_POST["saham"] && $_POST["investasi"] && $_POST["kprkpa"] && $_POST["kreditmotor"] && $_POST["kewajibanlain"]) {
+// if (isset($_POST["name"]) && $_POST["email"] && $_POST["telepon"] && $_POST["kota"] && $_POST["gaji"] && $_POST["bonus"] && $_POST["bisnis"] && $_POST["pajak"] && $_POST["donasi"] && $_POST["tabungan"] && $_POST["premi"] && $_POST["pinjaman"] && $_POST["kpr"] && $_POST["belanja"] && $_POST["gaya"] && $_POST["rumah"] && $_POST["kendaraan"] && $_POST["asetlain"] && $_POST["deposito"] && $_POST["logam"] && $_POST["saham"] && $_POST["investasi"] && $_POST["kprkpa"] && $_POST["kreditmotor"] && $_POST["kewajibanlain"]) {
 
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $name = test_input($_POST["name"]);
     $email = test_input($_POST["email"]);
     $phone = test_input($_POST["telepon"]);
@@ -53,7 +54,8 @@ if (isset($_POST["name"]) && $_POST["email"] && $_POST["telepon"] && $_POST["kot
 
     ob_start();
     require('fpdf182/fpdf.php');
-    // require('mc_table.php');
+    // require('mc_table.php');    
+
 
     class PDF extends FPDF {
     function table2col($index, $data){
@@ -219,23 +221,25 @@ if (isset($_POST["name"]) && $_POST["email"] && $_POST["telepon"] && $_POST["kot
     $labeltabungan = array('Tabungan & Deposito', 'Logam Mulia', 'Obligasi, Reksadana, Saham, atau Unit Link', 'Investasi Sektor Real');
     $labelkewajiban = array('KPR, KPA, dan Kredit Bisnis', 'Kredit motor, mobil atau pinjaman online','Kewajiban Lainnya');
 
-    $pendapatan = array($pendapatan_gaji, $pendapatan_insentif, $pendapatan_aktif, $pendapatan_pasif);
-    $pengeluaran = array($pengeluaran_pajak,$pengeluaran_donasi, $pengeluaran_tabungan, $pengeluaran_premi, $pengeluaran_kredit, $pengeluaran_pinjaman, $pengeluaran_rumahtangga, $pengeluaran_gayahidup);
-    $aset = array($aset_rumah, $aset_kendaraan, $aset_lain);
-    $tabungan = array($aset_deposito, $aset_logam, $aset_saham, $aset_investasi);
-    $kewajiban = array($aset_kewajiban_kpr, $aset_kewajiban_kredit_motor, $aset_kewajiban_lain);
+    setlocale(LC_MONETARY, 'en_US');
+
+    $pendapatan = array('IDR '.money_format('%.2n',$pendapatan_gaji), 'IDR '.money_format('%.2n',$pendapatan_insentif), 'IDR '.money_format('%.2n',$pendapatan_aktif), 'IDR '.money_format('%.2n',$pendapatan_pasif));
+    $pengeluaran = array('IDR '.money_format('%.2n',$pengeluaran_pajak), 'IDR '.money_format('%.2n',$pengeluaran_donasi), 'IDR '.money_format('%.2n', $pengeluaran_tabungan), 'IDR '.money_format('%.2n', $pengeluaran_premi), 'IDR '.money_format('%.2n',$pengeluaran_kredit), 'IDR '.money_format('%.2n',$pengeluaran_pinjaman), 'IDR '.money_format('%.2n',$pengeluaran_rumahtangga), 'IDR '.money_format('%.2n',$pengeluaran_gayahidup));
+    $aset = array('IDR '.money_format('%.2n',$aset_rumah),'IDR '.money_format('%.2n',$aset_kendaraan), 'IDR '.money_format('%.2n',$aset_lain));
+    $tabungan = array('IDR '.money_format('%.2n',$aset_deposito), 'IDR '.money_format('%.2n',$aset_logam), 'IDR '.money_format('%.2n',$aset_saham), 'IDR '.money_format('%.2n',$aset_investasi));
+    $kewajiban = array('IDR '.money_format('%.2n',$aset_kewajiban_kpr), 'IDR '.money_format('%.2n',$aset_kewajiban_kredit_motor), 'IDR '.money_format('%.2n',$aset_kewajiban_lain));
 
 
     $data = array(
-            array('Dana Darurat', $danadarurat, "3-6", "Keterangan1"),
-            array('Rasio Likuiditas', $rasiolikuiditas, "<15%", "Keterangan2"),
-            array('Rasio Tabungan',$rasiotabungan, ">10%", "Keterangan1"),
-            array('Rasio Kemampuan Membayar Hutang', $rasiokemampuanbayarhutang, "<35%", "Keterangan"),
-            array('Rasio Kemampuan Membayar Hutang Konsumtif',$rasiokemampuanbayarhutangkonsumtif, ">50%","Keterangan"),
-            array('Rasio Investasi Terhadap Kekayaan', $rasioinvestasiterhadapkekayaan, ">50%","Keterangan"),
-            array('Rasio Solvabilitas', $rasiosolvabilitas, ">50%","Keterangan"),
-            array('Rasio Pendapatan Aktif', $rasiopendapataaktif, ">50%","Keterangan"),
-            array('Rasio Financial Freedom', $rasiofinancialfreedom, ">50%","Keterangan")
+            array('Dana Darurat', $danadarurat, "6-12x", "Keterangan1"),
+            array('Rasio Likuiditas', $rasiolikuiditas, ">=15%", "Keterangan2"),
+            array('Rasio Tabungan',$rasiotabungan, "10%", "Keterangan1"),
+            array('Rasio Kemampuan Membayar Hutang', $rasiokemampuanbayarhutang, "35%", "Keterangan"),
+            array('Rasio Kemampuan Membayar Hutang Konsumtif',$rasiokemampuanbayarhutangkonsumtif, "15%","Keterangan"),
+            array('Rasio Investasi Terhadap Kekayaan', $rasioinvestasiterhadapkekayaan, ">=50%","Keterangan"),
+            array('Rasio Solvabilitas', $rasiosolvabilitas, ">=50%","Keterangan"),
+            array('Rasio Pendapatan Aktif', $rasiopendapataaktif, ">=50%","Keterangan"),
+            array('Rasio Financial Freedom', $rasiofinancialfreedom, ">=100%","Keterangan")
     );
 
 
@@ -249,6 +253,7 @@ if (isset($_POST["name"]) && $_POST["email"] && $_POST["telepon"] && $_POST["kot
 
     $pdf->SetFont( 'Arial', 'B', 24 );
     // $pdf->Ln( $reportNameYPos );
+    
     $pdf-> Ln(50);
     $pdf->Cell( 0, 0, 'Hi '.$name, 0, 0, 'L' );
     $pdf-> Ln(10);
@@ -268,7 +273,7 @@ if (isset($_POST["name"]) && $_POST["email"] && $_POST["telepon"] && $_POST["kot
     // $pdf->Cell(190,7,'Email: info@okefinansial.com, Phone: 08112922168',0,1,'C');
     // $pdf->Cell(10,7,'',0,1);
     // $pdf->SetAutoPageBreak(on, 4);
-
+    
     $pdf->SetFont('Arial','B',9);
     $pdf->Write(9, "Pendapatan Bulanan");
     $pdf-> Ln();

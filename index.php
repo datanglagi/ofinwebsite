@@ -55,36 +55,41 @@
   
 <div class="container">
   <form method="post" action="generatepdf.php"> 
+
     <div class="blue-border">
-    <h5><b>Identitas</b></h5>
+      <h5><b>Identitas</b></h5>
+      
       <div class="form-group row">
-        <label for="nama" class="col-sm-4 col-form-label">Nama</label>
-        <div class="col-sm-6">
-          <input type="text" class="form-control" id="nama" placeholder="">
+        <label for="name" class="col-sm-4 col-form-label">Nama</label>
+        <div class="col-sm-8">
+          <input type="text" class="form-control" id="name" placeholder="" name="name">
         </div>
       </div>
 
       <div class="form-group row">
         <label for="email" class="col-sm-4 col-form-label">Email</label>
         <div class="col-sm-8">
-          <input type="email" class="form-control" id="email" placeholder="email@example.com">
+          <input type="email" class="form-control" id="email" placeholder="" name="email">
         </div>
       </div>
-    
+
       <div class="form-group row">
         <label for="telepon" class="col-sm-4 col-form-label">Telepon</label>
         <div class="col-sm-8">
-          <input type="text" class="form-control" id="telepon" placeholder="0858 1829 1292">
+          <input type="text" class="form-control" id="telepon" placeholder="" name="telepon">
         </div>
       </div>
 
       <div class="form-group row">
         <label for="kota" class="col-sm-4 col-form-label">Kota</label>
         <div class="col-sm-8">
-          <input type="text" class="form-control" id="kota" placeholder="">
+          <input type="kota" class="form-control" id="kota" placeholder="" name="kota">
         </div>
       </div>
+
     </div>
+
+    <br>
 
     <div class="blue-border">
       <h5><b>Pendapatan Bulanan</b></h5>
@@ -276,12 +281,8 @@
     
   </form>
 </div>
-<br />
-
 <script src='assets/js/currency.js' type="text/javascript"></script>
      
-      
-</div>
      <!-- /.container -->
   
      <!-- footer -->
