@@ -221,13 +221,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $labeltabungan = array('Tabungan & Deposito', 'Logam Mulia', 'Obligasi, Reksadana, Saham, atau Unit Link', 'Investasi Sektor Real');
     $labelkewajiban = array('KPR, KPA, dan Kredit Bisnis', 'Kredit motor, mobil atau pinjaman online','Kewajiban Lainnya');
 
-    setlocale(LC_MONETARY, 'en_US');
+    setlocale(LC_MONETARY, 'id_ID');
 
-    $pendapatan = array('IDR '.money_format('%.2n',$pendapatan_gaji), 'IDR '.money_format('%.2n',$pendapatan_insentif), 'IDR '.money_format('%.2n',$pendapatan_aktif), 'IDR '.money_format('%.2n',$pendapatan_pasif));
-    $pengeluaran = array('IDR '.money_format('%.2n',$pengeluaran_pajak), 'IDR '.money_format('%.2n',$pengeluaran_donasi), 'IDR '.money_format('%.2n', $pengeluaran_tabungan), 'IDR '.money_format('%.2n', $pengeluaran_premi), 'IDR '.money_format('%.2n',$pengeluaran_kredit), 'IDR '.money_format('%.2n',$pengeluaran_pinjaman), 'IDR '.money_format('%.2n',$pengeluaran_rumahtangga), 'IDR '.money_format('%.2n',$pengeluaran_gayahidup));
-    $aset = array('IDR '.money_format('%.2n',$aset_rumah),'IDR '.money_format('%.2n',$aset_kendaraan), 'IDR '.money_format('%.2n',$aset_lain));
-    $tabungan = array('IDR '.money_format('%.2n',$aset_deposito), 'IDR '.money_format('%.2n',$aset_logam), 'IDR '.money_format('%.2n',$aset_saham), 'IDR '.money_format('%.2n',$aset_investasi));
-    $kewajiban = array('IDR '.money_format('%.2n',$aset_kewajiban_kpr), 'IDR '.money_format('%.2n',$aset_kewajiban_kredit_motor), 'IDR '.money_format('%.2n',$aset_kewajiban_lain));
+    $pendapatan = array(money_format('%.2n',$pendapatan_gaji), money_format('%.2n',$pendapatan_insentif), money_format('%.2n',$pendapatan_aktif), money_format('%.2n',$pendapatan_pasif));
+    $pengeluaran = array(money_format('%.2n',$pengeluaran_pajak), money_format('%.2n',$pengeluaran_donasi), money_format('%.2n', $pengeluaran_tabungan), money_format('%.2n', $pengeluaran_premi), money_format('%.2n',$pengeluaran_kredit), money_format('%.2n',$pengeluaran_pinjaman), money_format('%.2n',$pengeluaran_rumahtangga), money_format('%.2n',$pengeluaran_gayahidup));
+    $aset = array(money_format('%.2n',$aset_rumah),money_format('%.2n',$aset_kendaraan), money_format('%.2n',$aset_lain));
+    $tabungan = array(money_format('%.2n',$aset_deposito), money_format('%.2n',$aset_logam), money_format('%.2n',$aset_saham), money_format('%.2n',$aset_investasi));
+    $kewajiban = array(money_format('%.2n',$aset_kewajiban_kpr), money_format('%.2n',$aset_kewajiban_kredit_motor), money_format('%.2n',$aset_kewajiban_lain));
 
     if ($danadarurat<6) {
         $keterangandanadarurat = "Nilai darurat anda tidak ideal";
@@ -283,7 +283,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $keteranganfinancial = "Anda belum financial freedom";
     }
     $data = array(
-            array('Dana Darurat', strval($danadarurat)." %", "6-12x", $keterangandanadarurat),
+            array('Dana Darurat', $danadarurat, "6-12x", $keterangandanadarurat),
             array('Rasio Likuiditas', strval($rasiolikuiditas)." %", ">=15%", $keteranganlikuiditas),
             array('Rasio Tabungan',strval($rasiotabungan)." %", "10%", $keterangantabungan),
             array('Rasio Kemampuan Membayar Hutang', strval($rasiokemampuanbayarhutang)." %", "35%", $keteranganbayarhutang),
