@@ -2,6 +2,8 @@
 
 <?php
 
+use setasign\Fpdi\Fpdi;
+
 function test_input($data) {
     $data = trim($data);
     $data = stripslashes($data);
@@ -68,11 +70,59 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             // Cell(width, height, text, border, position, fill color, link)
             // position 0: on the right, 1:on the begining of the next line, 2: below
             // for border you change choose 1, 0, 'T', 'B', 'L','R', 'LR'
-            $this->Cell(70,6,$index[$x],0,0,'L', $fill);
-            $this->Cell(40,6,$data[$x],0,0, 'R', $fill);
+            $this->Cell(100,6,$index[$x],0,0,'L', $fill);
+            $this->Cell(60,6,$data[$x],0,0, 'R', $fill);
             $this->Ln();
             // $fill = !$fill;
         }
+    }
+
+    function titlebloc($title){
+        $this->SetFillColor(229,229,247);
+        $this->SetTextColor(0);
+        $this->SetFont( 'Arial', 'B', 12);
+        $this->Cell(160, 6, $title, 0,0,'C',true);
+        $this->Ln();
+    }
+
+    function total($label,$totalvalue){
+        $this->SetFillColor(229,229,247);
+        $this->SetTextColor(0);
+        $this->SetFont( 'Arial', 'B', 12);
+        $this->Cell(100, 6, $label, 0,0,'L',true);
+        $this->Cell(60, 6, $totalvalue, 0,0,'R',true);
+        $this->Ln();
+    }
+
+        // Page header
+    function Header()
+    {
+        // $this->SetLeftMargin(25);
+        // // Logo
+        // $this->Image('logoofinbaru.png',10,6,30);
+        // // Arial bold 15
+        // $this->SetFont('Arial','B',15);
+        // // Move to the right
+        // $this->Cell(80);
+        // // Title
+        // $this->Cell(30,10,'OFIN INDONESIA',0,0,'C');
+        // // Line break
+        // $this->Ln(20);
+        $this->SetY(70);   
+    }
+
+    // Page footer
+    function Footer()
+    {
+        $this->SetFillColor(41, 42, 104);
+        $this->SetTextColor(255,255,255);
+        // $this->SetLeftMargin(25);
+        // Position at 1.5 cm from bottom
+        $this->SetY(-10);
+        // Arial italic 8
+        $this->SetFont('Arial','I',8);
+        // Page number
+        $this->Cell(0,10,'Page '.$this->PageNo().'/{nb}',0,0,'C', true);
     }
 
     var $widths;
@@ -223,6 +273,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     setlocale(LC_MONETARY, 'id_ID');
 
+    $labelreportkeuangan = array("Cash Flow Bulanan Anda", "Kekayaan Bersih Anda");
+    $reportkeuangan = array(money_format('%.2n',$cashflow), money_format('%.2n',$kekayaanbersih));
+
     $pendapatan = array(money_format('%.2n',$pendapatan_gaji), money_format('%.2n',$pendapatan_insentif), money_format('%.2n',$pendapatan_aktif), money_format('%.2n',$pendapatan_pasif));
     $pengeluaran = array(money_format('%.2n',$pengeluaran_pajak), money_format('%.2n',$pengeluaran_donasi), money_format('%.2n', $pengeluaran_tabungan), money_format('%.2n', $pengeluaran_premi), money_format('%.2n',$pengeluaran_kredit), money_format('%.2n',$pengeluaran_pinjaman), money_format('%.2n',$pengeluaran_rumahtangga), money_format('%.2n',$pengeluaran_gayahidup));
     $aset = array(money_format('%.2n',$aset_rumah),money_format('%.2n',$aset_kendaraan), money_format('%.2n',$aset_lain));
@@ -294,28 +347,34 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             array('Rasio Financial Freedom', strval($rasiofinancialfreedom)." %", ">=100%",$keteranganfinancial)
     );
 
+    
 
-    $pdf = new PDF();
+    $pdf = new PDF('P', 'mm', 'A4');
     $pdf->AliasNbPages();
     $pdf->AddPage();
     $pdf->SetLeftMargin(25);
 
-    $pdf->Image('logoofinbaru.png',10,10,30,15);
-    $pdf-> Ln();
+    $pdf->Image('assets/img/templatepng/1.png',0,0, -200);
+    // $pdf-> Ln();
+
+    $pdf-> Ln(50);
+    $pdf->Image('Fincheck1.png', 100,$pdf->getY(), 70);
 
     $pdf->SetFont( 'Arial', 'B', 24 );
     // $pdf->Ln( $reportNameYPos );
     
     $pdf-> Ln(50);
-    $pdf->Cell( 0, 0, 'Hi '.$name, 0, 0, 'L' );
+    $pdf->Cell( 0, 0, 'Hi '.$name.',', 0, 0, 'L' );
     $pdf-> Ln(10);
-    $pdf->Cell( 0, 0, 'Ini dia Hasil', 0, 0, 'L' );
+    $pdf->Cell( 0, 0, 'Ini Hasil Financial Check-Up', 0, 0, 'L' );
     $pdf-> Ln(10);
-    $pdf->Cell( 0, 0, 'Financial Check-Up Mu', 0, 0, 'L' );
+    $pdf->SetFont('');
+    $pdf->Cell( 0, 0, 'Kondisi Kesehatan Keuanganmu', 0, 0, 'L' );
+    $pdf->Cell( 0, 0, '', 0, 0, 'L' );
     $pdf-> Ln(20);
 
     $pdf -> AddPage();
-
+    $pdf->Image('assets/img/templatepng/2.png',0,0, -200);
 
 
     // $pdf->SetFont('Arial','B',16);
@@ -326,47 +385,64 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // $pdf->Cell(10,7,'',0,1);
     // $pdf->SetAutoPageBreak(on, 4);
     
-    $pdf->SetFont('Arial','B',9);
-    $pdf->Write(9, "Pendapatan Bulanan");
-    $pdf-> Ln();
+    // $pdf->SetFont('Arial','B',12);
+    // $pdf->Write(9, "Pendapatan Bulanan");
+    $pdf->titlebloc("Pendapatan Bulanan");
+    $pdf-> Ln(5);
     $pdf->table2col($labelpendapatan,$pendapatan);
+    $pdf->total("Total Pendapatan",money_format('%.2n',$totalpendapatan));
     $pdf-> Ln();
 
-    $pdf->SetFont('Arial','B',9);
-    $pdf->Write(9, "Pengeluaran Bulanan");
+    // $pdf->SetFont('Arial','B',12);
+    $pdf->titlebloc("Pengeluaran Bulanan");
     $pdf-> Ln();
     $pdf->table2col($labelpengeluaran,$pengeluaran);
-    $pdf-> Ln();
-
-    $pdf->SetFont('Arial','B',9);
-    $pdf->Write(9, "Aset");
-    $pdf-> Ln();
-    $pdf->table2col($labelaset,$aset);
-    $pdf-> Ln();
-
-    $pdf->SetFont('Arial','B',9);
-    $pdf->Write(9, "Investasi");
-    $pdf-> Ln();
-    $pdf->table2col($labeltabungan,$tabungan);
-    $pdf-> Ln();
-
-    $pdf->SetFont('Arial','B',9);
-    $pdf->Write(9, "Kewajiban");
-    $pdf-> Ln();
-    $pdf->table2col($labelkewajiban,$kewajiban);
+    $pdf->total("Total Pengeluaran",money_format('%.2n',$totalpengeluaran));
     $pdf-> Ln();
 
     $pdf->AddPage();
+    $pdf->Image('assets/img/templatepng/2.png',0,0, -200);
+    // $pdf->SetFont('Arial','B',12);
+    $pdf->titlebloc("Aset");
+    $pdf-> Ln();
+    $pdf->table2col($labelaset,$aset);
+    $pdf->total("Total Aset",money_format('%.2n',$totalaset));
+    $pdf-> Ln();
 
+    // $pdf->SetFont('Arial','B',12);
+    $pdf->titlebloc("Investasi");
+    $pdf-> Ln();
+    $pdf->table2col($labeltabungan,$tabungan);
+    $pdf->total("Total Tabungan & Investasi",money_format('%.2n',$totaltabunganinvestasi));
+    $pdf->total("Total Aset, Tabungan & Investasi",money_format('%.2n',$totalasetdaninvestasi));
+    $pdf-> Ln();
+
+    // $pdf->SetFont('Arial','B',12);
+    $pdf->titlebloc("Kewajiban");
+    $pdf-> Ln();
+    $pdf->table2col($labelkewajiban,$kewajiban);
+    $pdf->total("Total Hutang",money_format('%.2n',$totalhutang));
+    $pdf-> Ln();
+
+    $pdf->AddPage();
+    $pdf->Image('assets/img/templatepng/2.png',0,0, -200);
     // $pdf->SetFont('Arial','B',10);
     // $pdf->Cell(190,7, "Financial Health Checkup to: ".$name ,0,1,'L');
 
+    $pdf->titlebloc("Laporan Keuangan");
+    $pdf-> Ln();
+    $pdf->table2col($labelreportkeuangan,$reportkeuangan);
+    $pdf-> Ln();
+
+    $pdf->titlebloc("Rasio Keuangan");
+    $pdf-> Ln();
     $pdf->SetFillColor(229,229,247);
     $pdf->SetTextColor(0);
     $pdf->SetDrawColor(229,229,247);
     $pdf->SetLineWidth(.3);
+    $pdf->SetFont('');
 
-    $pdf->SetWidths(array(40,30,30,65));    
+    $pdf->SetWidths(array(40,30,30,60));    
     $pdf -> Row($columnLabels, array(229,229,247));
     foreach ($data as $row) {
         $pdf -> Row($row,array(255,255,255));
@@ -374,10 +450,174 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     // $pdf->SetFont('Arial','B',9);
     // $pdf->SetLeftMargin(25);
-    $pdf -> Write(9,"Ingin tahu informasi selengkapnya? Silakan hubungi kami atau isi form konsultasi pada tautan berikut.");
-    $pdf->Write(9,'okefinansial.com','https://www.okefinansial.com/ofins-services/');
-    $pdf->Output( "report.pdf", "I" );
+    // $pdf -> Write(9,"Ingin tahu informasi selengkapnya? Silakan hubungi kami atau isi form konsultasi pada tautan berikut.");
+    // $pdf->Write(9,'okefinansial.com','https://www.okefinansial.com/ofins-services/');
+
+
+    $pdf->AddPage();
+    $pdf->Image('assets/img/templatepng/1.png',0,0, -200);
+    $pdf->SetFont( 'Arial', 'B', 18 );
+    $pdf->Cell(0, 0, 'Diskusikan Hasil Finansial Check Up Kamu', 0, 0, 'C' );
+    $pdf->Ln(10);
+    $pdf->SetFont( 'Arial', '', 9 );
+    // $pdf->Write( 6, "Despite the economic downturn, WidgetCo had a strong year. Sales of the HyperWidget in particular exceeded expectations. The fourth quarter was generally the best performing; this was most likely due to our increased ad spend in Q3." );   
+    $pdf -> Write(6,"Untuk pertanyaan lebih lanjut mengenai hasil financial check up silakan Anda menghubungi Perencana Keuangan Independen OFIN Indonesia melalui WhatsApp 08112922168 atau website www.okefinansial.com:");
+    $pdf->Ln(10);
+    $pdf->Image('ofinfaq.png',$pdf->GetX(),$pdf->GetY(), 150);
+    // $width=$pdf -> w; // Width of Current Page
+    // $height=$pdf -> h; // Height of Current Page
+
+    // $pdf->Line(0, $pdf->GetY(),160,$pdf->GetY()); // Line one Cross
+    // $pdf->Line($width, 0,0,$height); // Line two Cross
+
+
+    $pdf->Output( "report.pdf", "F" );
     //   ob_end_flush(); 
     // }
+        
+    require("PHPMailer/src/PHPMailer.php");
+    require("PHPMailer/src/Exception.php");
+    require("PHPMailer/src/SMTP.php");
+
+    $mail = new PHPMailer\PHPMailer\PHPMailer;
+  
+  
+    $mail->IsSMTP();
+    $mail->SMTPSecure = 'tls';
+    $mail->Host = "okefinansial.com"; //hostname masing-masing provider email
+    $mail->SMTPDebug = 0;
+    $mail->Port = 587;
+    $mail->SMTPAuth = true;
+    $mail->Username = "info@okefinansial.com"; //user email
+    $mail->Password = "Merciku10"; //password email
+    
+    $mail->SetFrom("info@okefinansial.com","OFIN");
+    $mail->AddAddress($email);
+    
+    $mail->Subject  = "Financial Health Check UP";      
+    $body =  "Kepada ".$name.",
+
+ 
+
+    Selamat Pagi, perkenalkan saya Eno Casmi, Head of Marketing dari okefinansial.com. Sebelumnya, kami mengucapkan selamat karena Anda sudah mulai mengetahui kondisi keuangan Anda.
+    
+    Apakah saat ini anda ingin meningkatkan kinerja keuangan Anda, ingin memiliki asset diusia muda atau ingin mulai  investasi namun masih bingung membeli instrument investasi apa?
+    
+    Jika ya, hal tersebut adalah hal yang wajar.
+    
+    Sebenarnya Anda dapat meningkatkan kinerja keuangan Anda, karena dengan financial planning yang tepat semua mimpi anda bisa terwujud, kami dengan senang hati akan membimbing Anda dengan cara yang mudah dan menyenangkan.
+    
+    Bagaimana jika saya bantu untuk setting appointment dengan perencana keungan Oke Finansial Indonesia? Kami akan menghubungi Bapak dalam waktu 1x24 jam untuk settinsg appointment.
+    
+     
+    
+    Terima kasih dan sukses selalu
+    
+    ---
+    
+    P.S:
+    
+    Biaya konsultasi adalah 1.000.000 untuk waktu selama 2 jam lebih atau kurang. Konsultasi dapat dilakukan via online (Whatsapp, Telpon, Video Call, etc)* atau offline (lokasi di Yogyakarta dan Semarang).
+    
+     
+    
+    Konsultasi sudah termasuk:
+    
+    -          Financial Health Check Up
+    
+    -          Minutes of Meeting (report dari hasil konsultasi)
+    
+    Informasi lebih lenjut dapat menghubungi Whatsapp Eno: 0811-310-3313
+    
+    Waktu:
+    
+    Weekday 08.00 – 17.00
+    
+    Weekend menyesuaikan
+    
+    *waktu konsultasi via online disesuaikan
+    
+    Lokasi:
+    
+    Semarang
+    
+    Jl.Bukit Sakura II Bukit Wahid Regency No.C 23, Manyaran, Kec. Semarang Bar., Kota Semarang, Jawa Tengah 50147
+    
+    Yogyakarta:
+    
+    …………………………….
+    
+    
+    
+    Best regards:
+    
+
+    
+    Eno Casmi, MBA., AWP., QWP.
+    
+    Head of Digital Marketing
+    
+    Phone: +62811 – 310 – 3310
+    
+    www.okefinansial.com
+    
+    PT. Oke Finansial Indonesia
+    
+     
+    
+    p:  +62 24 7619 1771  
+    m:  +62 877 3161 5282  
+    a:  Jl.Bukit Sakura II Bukit Wahid Regency No.C 23, Manyaran, Kec. Semarang
+    w:  https://www.okefinansial.com   
+    e:  @info@okefinansial.com      
+    
+    
+    "
+    ;
+    $mail->Body     = $body;
+  
+  
+    $mail->AddAttachment('report.pdf');
+   
+    if($mail->Send()) { $result= 1;}
+    else { $result= 0;
+    }
+
+
+    require_once('fpdf182/fpdf.php');
+    require_once('FPDI-2.3.2/src/autoload.php');
+
+    // initiate FPDI
+    $pdf = new Fpdi();
+    // add a page
+    $pdf->AddPage();
+    // set the source file
+    $pdf->setSourceFile('report.pdf');
+    // import page 1
+    $tplIdx = $pdf->importPage(1);
+    // use the imported page and place it at position 10,10 with a width of 100 mm
+    $pdf->useTemplate($tplIdx, 0, 0, 210);
+
+    $pdf->AddPage();
+    $pdf->setSourceFile('report.pdf');
+    $tplIdx = $pdf->importPage(2);
+    $pdf->useTemplate($tplIdx, 0, 0, 210);
+
+    $pdf->AddPage();
+    $pdf->setSourceFile('report.pdf');
+    $tplIdx = $pdf->importPage(3);
+    $pdf->useTemplate($tplIdx, 0, 0, 210);
+
+    $pdf->AddPage();
+    $pdf->setSourceFile('report.pdf');
+    $tplIdx = $pdf->importPage(4);
+    $pdf->useTemplate($tplIdx, 0, 0, 210);
+
+    $pdf->AddPage();
+    $pdf->setSourceFile('report.pdf');
+    $tplIdx = $pdf->importPage(5);
+    $pdf->useTemplate($tplIdx, 0, 0, 210);
+
+    $pdf->Output();
 }
 ?>
